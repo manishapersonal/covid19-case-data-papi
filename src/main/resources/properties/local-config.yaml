@@ -1,0 +1,29 @@
+http:
+  port: "8083"
+  private:
+    port: "8091"
+    
+https:
+  port: "8082"
+  private:
+    port: "8092"
+    
+api:
+  id: "18336106"
+  majorVersion: "v1"
+  groupId: "82dfac12-b94d-419e-8285-2a25c522ad8e"
+  artifactId: "covid19-case-data-papi"
+  version: "1.0.1"
+  specification: "resource::${api.groupId}:${api.artifactId}:${api.version}:raml:zip:covid19-case-data-papi.raml"
+
+caseDistributionDBSapi:
+  host: "localhost"
+  port: "8085"
+  basePath: "/api"
+  path: "/covid19CaseData"
+    
+covid19CaseDistributionQueue:
+  username: "admin"
+  password: "admin"
+  brokerUrl: "tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=10"
+  name: "Covid19CaseDistributionQueue"
