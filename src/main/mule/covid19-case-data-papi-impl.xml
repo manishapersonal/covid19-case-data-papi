@@ -138,14 +138,14 @@ output application/json
 			<jms:response persistentDelivery="true" />
 		</jms:listener>
 		<logger level="INFO" doc:name="ENTRY" doc:id="6c567b92-d575-4e06-b695-ab58f8e41e5e" message="ENTRY: #[flow.name]"/>
-<!-- [STUDIO:"Set Payload"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Set Payload" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" /> [STUDIO] -->
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;read(payload,"application/json")]' doc:name="Set Payload" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" />
 		<ee:transform doc:name="Format Data" doc:id="10c541e1-1c29-42f1-ae91-b24f703e7bae">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload map ((item,indexOfitem) -> {
-	"date": (item.date as Date {format: "d/M/yyyy"} as String {format: "yyyy-MM-dd"}) ,
+	"date": (item.date as Date {format: "yyyy-MM-dd"} as String {format: "yyyy-MM-dd"}) ,
 	"county": item.county,
 	"state": item.state ,
 	"fips": item.fips as Number default 0,
