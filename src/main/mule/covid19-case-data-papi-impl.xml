@@ -8,18 +8,36 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<jms:config
-		name="activeMQJMSConfig"
+		name="caseDistributionMQJMSConfig"
 		doc:name="JMS Config"
 		doc:id="8dd61044-dd65-4036-be87-e3255ec0d141">
-		<jms:active-mq-connection username="${covid19CaseDistributionQueue.username}" password="${secure::covid19CaseDistributionQueue.password}">
-			<jms:factory-configuration brokerUrl="${covid19CaseDistributionQueue.brokerUrl}" />
+		<jms:active-mq-connection username="${activeMQConsumer.username}" password="${secure::activeMQConsumer.password}">
+			<jms:caching-strategy >
+				<jms:no-caching />
+			</jms:caching-strategy>
+			<jms:factory-configuration brokerUrl="${activeMQConsumer.brokerUrl}" />
+		</jms:active-mq-connection>
+	</jms:config>
+		<jms:config
+		name="usCountiesMQJMSConfig"
+		doc:name="JMS Config"
+		doc:id="486ed4a6-0b40-404e-946e-2261a80a9072">
+		<jms:active-mq-connection username="${activeMQConsumer.username}" password="${secure::activeMQConsumer.password}">
+			<jms:caching-strategy >
+				<jms:no-caching />
+			</jms:caching-strategy>
+			<jms:factory-configuration brokerUrl="${activeMQConsumer.brokerUrl}" />
 		</jms:active-mq-connection>
 	</jms:config>
 	<!-- <anypoint-mq:config name="anypointMQConfig" doc:name="Anypoint MQ Config" doc:id="77425b13-fdeb-46ee-bfe8-261d620a066d" >
 		<anypoint-mq:connection url="${covid19CaseDistributionQueue.url}" clientId="${covid19CaseDistributionQueue.clientAppId}" clientSecret="${covid19CaseDistributionQueue.clientSecret}"/>
 	</anypoint-mq:config> -->
-	<http:request-config name="dbSapiHTTPRequestConfig" doc:name="HTTP Request configuration" doc:id="5806f48d-f1d8-4397-b57c-df4870f1b0e6" basePath="${caseDistributionDBSapi.basePath}">
-		<http:request-connection host="${caseDistributionDBSapi.host}" port="${caseDistributionDBSapi.port}" />
+	<http:request-config name="databaseSapiHTTPRequestConfig" doc:name="HTTP Request configuration" doc:id="5806f48d-f1d8-4397-b57c-df4870f1b0e6" basePath="${databaseSapi.basePath}">
+		<http:request-connection host="${databaseSapi.host}" port="${databaseSapi.port}" >
+			<reconnection >
+				<reconnect />
+			</reconnection>
+		</http:request-connection>
 	</http:request-config>
 	<flow name="get-covid19-case-data-papi-flow" doc:id="1f5e72d1-fb09-4b0c-8fb6-6dd01a6f4614" >
 		<!-- <anypoint-mq:subscriber doc:name="Subscriber" doc:id="57409ebc-8fe3-470e-87b4-9a61ac8ed50f" config-ref="anypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
@@ -31,7 +49,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 				</anypoint-mq:polling>
 			</anypoint-mq:subscriber-type>
 		</anypoint-mq:subscriber> -->
-		<jms:listener doc:name="On New Message - Covid19CaseDistributionQueue" doc:id="ebcd71fb-f9e5-43ff-9295-55e0fe67672c" config-ref="activeMQJMSConfig" destination="${covid19CaseDistributionQueue.name}">
+		<jms:listener doc:name="On New Message - Covid19CaseDistributionQueue" doc:id="ebcd71fb-f9e5-43ff-9295-55e0fe67672c" config-ref="caseDistributionMQJMSConfig" destination="${activeMQConsumer.caseDistributionQueue.name}">
+			<reconnect />
 			<jms:consumer-type >
 				<jms:queue-consumer />
 			</jms:consumer-type>
@@ -60,7 +79,7 @@ payload map ((item,indexOfitem) -> {
 })]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="Covid19 Case Data Database SAPI" doc:id="3fe413b9-5a10-4f08-931c-3a8b6a89fcef" config-ref="dbSapiHTTPRequestConfig" path="${caseDistributionDBSapi.path}" sendCorrelationId="ALWAYS"/>
+		<http:request method="POST" doc:name="Covid19 Case Data Database SAPI" doc:id="3fe413b9-5a10-4f08-931c-3a8b6a89fcef" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.caseDistributionData.path}" sendCorrelationId="ALWAYS"/>
 		<logger level="INFO" doc:name="EXIT" doc:id="2451b24d-7fc4-4b9f-9448-46e713b57ad1" message="EXIT: #[flow.name]"/>
 		<!-- <http:request method="GET" doc:name="Request" doc:id="a8db081c-d02c-4692-a0a3-85168dee977d" /> -->
 		<!-- <ee:transform>
@@ -101,4 +120,41 @@ output application/json
             </ee:message>
         </ee:transform> -->
 	</flow>
+	<flow name="get-us-counties-covid19-case-data-papi-flow" doc:id="04a91f53-ec3c-416a-bc8d-874d735d3cc2">
+			<!-- <anypoint-mq:subscriber doc:name="Subscriber" doc:id="f0732365-2660-48fb-aec5-5fa754412431" config-ref="anypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
+			<anypoint-mq:subscriber-type >
+				<anypoint-mq:polling >
+					<scheduling-strategy >
+						<fixed-frequency />
+					</scheduling-strategy>
+				</anypoint-mq:polling>
+			</anypoint-mq:subscriber-type>
+		</anypoint-mq:subscriber> -->
+		<jms:listener doc:name="On New Message - USCountiesCovid19CaseQueue" doc:id="410ee9b4-982c-4d87-9b0c-934cdd824f30" config-ref="usCountiesMQJMSConfig" destination="${activeMQConsumer.usCountiesQueue.name}">
+			<reconnect />
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+			<jms:response persistentDelivery="true" />
+		</jms:listener>
+		<logger level="INFO" doc:name="ENTRY" doc:id="6c567b92-d575-4e06-b695-ab58f8e41e5e" message="ENTRY: #[flow.name]"/>
+<!-- [STUDIO:"Set Payload"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Set Payload" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" /> [STUDIO] -->
+		<ee:transform doc:name="Format Data" doc:id="10c541e1-1c29-42f1-ae91-b24f703e7bae">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item,indexOfitem) -> {
+	"date": (item.date as Date {format: "d/M/yyyy"} as String {format: "yyyy-MM-dd"}) ,
+	"county": item.county,
+	"state": item.state ,
+	"fips": item.fips as Number default 0,
+	"cases": item.cases as Number default 0,
+	"deaths": item.deaths as Number default 0
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="USCounties Covid19 Case Data Database SAPI" doc:id="4ed163ea-61bb-4d4f-b5cc-178dfe07a09c" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.usCountiesCovid19Data.path}" sendCorrelationId="ALWAYS"/>
+		<logger level="INFO" doc:name="EXIT" doc:id="4a87151c-0199-498c-bc2e-240ee17f7d43" message="EXIT: #[flow.name]"/>
+		</flow>
 </mule>
