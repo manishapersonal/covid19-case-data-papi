@@ -24,6 +24,5 @@ caseDistributionDBSapi:
     
 covid19CaseDistributionQueue:
   username: "admin"
-  password: "admin"
   brokerUrl: "tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=10"
   name: "Covid19CaseDistributionQueue"

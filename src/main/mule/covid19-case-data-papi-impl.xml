@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		name="activeMQJMSConfig"
 		doc:name="JMS Config"
 		doc:id="8dd61044-dd65-4036-be87-e3255ec0d141">
-		<jms:active-mq-connection username="${covid19CaseDistributionQueue.username}" password="${covid19CaseDistributionQueue.password}">
+		<jms:active-mq-connection username="${covid19CaseDistributionQueue.username}" password="${secure::covid19CaseDistributionQueue.password}">
 			<jms:factory-configuration brokerUrl="${covid19CaseDistributionQueue.brokerUrl}" />
 		</jms:active-mq-connection>
 	</jms:config>
