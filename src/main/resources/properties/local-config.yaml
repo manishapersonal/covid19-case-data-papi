@@ -32,3 +32,14 @@ activeMQConsumer:
     name: "Covid19CaseDistributionQueue"
    usCountiesQueue:
     name: "USCountiesCovid19CaseQueue"
+    
+//anypointMQConsumer:  
+  //url: "https://mq-us-east-1.anypoint.mulesoft.com/api/v1"
+  //covid19CaseDistributionQueue:
+    //clientAppId: ""
+    //clientSecret: ""
+    //name: "Covid19CaseDistributionQueue"
+  //usCountiesCovid19CaseQueue:
+    //clientAppId: ""
+    //clientSecret: ""
+    //name: "USCountiesCovid19CaseQueue"

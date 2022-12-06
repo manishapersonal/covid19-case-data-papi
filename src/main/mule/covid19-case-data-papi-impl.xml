@@ -29,8 +29,11 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 			<jms:factory-configuration brokerUrl="${activeMQConsumer.brokerUrl}" />
 		</jms:active-mq-connection>
 	</jms:config>
-	<!-- <anypoint-mq:config name="anypointMQConfig" doc:name="Anypoint MQ Config" doc:id="77425b13-fdeb-46ee-bfe8-261d620a066d" >
-		<anypoint-mq:connection url="${covid19CaseDistributionQueue.url}" clientId="${covid19CaseDistributionQueue.clientAppId}" clientSecret="${covid19CaseDistributionQueue.clientSecret}"/>
+	<!-- <anypoint-mq:config name="consumerCovid19CaseAnypointMQConfig" doc:name="Anypoint MQ Config" doc:id="77425b13-fdeb-46ee-bfe8-261d620a066d" >
+		<anypoint-mq:connection url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientAppId}" clientSecret="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientSecret}"/>
+	</anypoint-mq:config>
+		<anypoint-mq:config name="consumerUSCountiesAnypointMQConfig" doc:name="Anypoint MQ Config" doc:id="cb9894ab-136d-4929-9a6c-c055aea25572" >
+		<anypoint-mq:connection url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientAppId}" clientSecret="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientSecret}"/>
 	</anypoint-mq:config> -->
 	<http:request-config name="databaseSapiHTTPRequestConfig" doc:name="HTTP Request configuration" doc:id="5806f48d-f1d8-4397-b57c-df4870f1b0e6" basePath="${databaseSapi.basePath}">
 		<http:request-connection host="${databaseSapi.host}" port="${databaseSapi.port}" >
@@ -40,7 +43,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		</http:request-connection>
 	</http:request-config>
 	<flow name="get-covid19-case-data-papi-flow" doc:id="1f5e72d1-fb09-4b0c-8fb6-6dd01a6f4614" >
-		<!-- <anypoint-mq:subscriber doc:name="Subscriber" doc:id="57409ebc-8fe3-470e-87b4-9a61ac8ed50f" config-ref="anypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
+		<!-- <anypoint-mq:subscriber doc:name="Subscriber - Covid19CaseDistributionQueue" doc:id="57409ebc-8fe3-470e-87b4-9a61ac8ed50f" config-ref="consumerCovid19CaseAnypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
 			<anypoint-mq:subscriber-type >
 				<anypoint-mq:polling >
 					<scheduling-strategy >
@@ -121,7 +124,7 @@ output application/json
         </ee:transform> -->
 	</flow>
 	<flow name="get-us-counties-covid19-case-data-papi-flow" doc:id="04a91f53-ec3c-416a-bc8d-874d735d3cc2">
-			<!-- <anypoint-mq:subscriber doc:name="Subscriber" doc:id="f0732365-2660-48fb-aec5-5fa754412431" config-ref="anypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
+		<!-- <anypoint-mq:subscriber doc:name="Subscriber - USCountiesCovid19CaseQueue" doc:id="a6ffb260-f150-45c8-8fee-46db172e1347" config-ref="consumerUSCountiesAnypointMQConfig" destination="${usCountiesCovid19CaseQueue.name}">
 			<anypoint-mq:subscriber-type >
 				<anypoint-mq:polling >
 					<scheduling-strategy >

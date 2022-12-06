@@ -5,3 +5,11 @@ tls:
 
 activeMQConsumer:
   password: "![TMS4M6Upz20=]"
+  
+anypointMQConsumer:
+  covid19CaseDistributionQueue:
+    clientAppId: ""
+    clientSecret: ""
+  usCountiesCovid19CaseQueue:
+    clientAppId: ""
+    clientSecret: ""
