@@ -112,9 +112,9 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>82dfac12-b94d-419e-8285-2a25c522ad8e</groupId>
+			<groupId>62123581-121b-4c73-bf9d-19d53054fb8e</groupId>
 			<artifactId>covid19-case-data-papi</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.0</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
