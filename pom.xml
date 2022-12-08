@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>62123581-121b-4c73-bf9d-19d53054fb8e</groupId>
 			<artifactId>covid19-case-data-papi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>

@@ -3,11 +3,11 @@
     <flow name="covid19-case-data-papi-main">
         <http:listener config-ref="apiHttpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="apiConfig" />
@@ -16,20 +16,28 @@
     <flow name="covid19-case-data-papi-console">
         <http:listener config-ref="apiHttpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="apiConfig" />
 		<error-handler ref="api-console-error-handler" />
     </flow>
     <flow name="get:\covid19\caseDistribution:apiConfig">
-		<flow-ref doc:name="get-covid19-case-data-papi-flow" doc:id="d84d35a3-65cc-4869-be47-164bc3320f41" name="get-covid19-case-data-papi-flow"/>
+		<flow-ref doc:name="get-covid19-case-data-papi-flow" doc:id="69a221d7-d06b-4615-bc69-9a6850c05870" name="get-covid19-case-data-papi-flow"/>
     </flow>
     <flow name="get:\covid19\usCountiesCovid19Case:apiConfig">
-		<flow-ref doc:name="get-us-counties-covid19-case-data-papi-flow" doc:id="f785fdf6-b23a-4f22-b0cd-bd069fb5988f" name="get-us-counties-covid19-case-data-papi-flow"/>
+		<flow-ref doc:name="get-us-counties-covid19-case-data-papi-flow" doc:id="24387469-b8ea-4c23-b782-3bd8038c7c4a" name="get-us-counties-covid19-case-data-papi-flow"/>
+    </flow>
+    <flow name="post:\covid19\caseDistribution:apiConfig">
+        <flow-ref doc:name="post-covid19-case-data-papi-flow" doc:id="cdb4d215-63e6-4e43-b85e-d5874ec77722" name="post-covid19-case-data-papi-flow"/>
+		
+    </flow>
+    <flow name="post:\covid19\usCountiesCovid19Case:apiConfig">
+		<flow-ref doc:name="post-us-counties-covid19-case-data-papi-flow" doc:id="966a244c-9f04-47cc-8e89-ffdcabf6e186" name="post-us-counties-covid19-case-data-papi-flow"/>
+        
     </flow>
 </mule>

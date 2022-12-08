@@ -13,7 +13,7 @@ api:
   majorVersion: "v1"
   groupId: "62123581-121b-4c73-bf9d-19d53054fb8e"
   artifactId: "covid19-case-data-papi"
-  version: "1.0.0"
+  version: "1.0.1"
   specification: "resource::${api.groupId}:${api.artifactId}:${api.version}:raml:zip:covid19-case-data-papi.raml"
 
 databaseSapi:
@@ -28,6 +28,26 @@ databaseSapi:
   usCountiesCovid19Data:  
     path: "/usCountiesCovid19CaseData"
     untilSuccessfull:
+      maxRetries: "3"
+      timeInterval: "30000"
+
+##Trigger Case Distribution SAPI    
+caseDistributionSapi:
+  host: "localhost"
+  port: "8084"
+  basePath: "/api"      
+  path: "/covid19CaseDistribution"
+  untilSuccessfull:
+      maxRetries: "3"
+      timeInterval: "30000"
+      
+##Trigger US Counties Covid19 Case SAPI    
+usCountiesSapi:
+  host: "localhost"
+  port: "8086"
+  basePath: "/api"      
+  path: "/usCountiesCovid19Case"
+  untilSuccessfull:
       maxRetries: "3"
       timeInterval: "30000"
       

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+<mule
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
-	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
@@ -12,37 +19,80 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 		name="caseDistributionMQJMSConfig"
 		doc:name="JMS Config"
 		doc:id="8dd61044-dd65-4036-be87-e3255ec0d141">
-		<jms:active-mq-connection username="${activeMQConsumer.username}" password="${secure::activeMQConsumer.password}">
-			<jms:caching-strategy >
+		<jms:active-mq-connection
+			username="${activeMQConsumer.username}"
+			password="${secure::activeMQConsumer.password}">
+			<jms:caching-strategy>
 				<jms:no-caching />
 			</jms:caching-strategy>
-			<jms:factory-configuration brokerUrl="${activeMQConsumer.brokerUrl}" />
+			<jms:factory-configuration
+				brokerUrl="${activeMQConsumer.brokerUrl}" />
 		</jms:active-mq-connection>
 	</jms:config>
-		<jms:config
+	<jms:config
 		name="usCountiesMQJMSConfig"
 		doc:name="JMS Config"
 		doc:id="486ed4a6-0b40-404e-946e-2261a80a9072">
-		<jms:active-mq-connection username="${activeMQConsumer.username}" password="${secure::activeMQConsumer.password}">
-			<jms:caching-strategy >
+		<jms:active-mq-connection
+			username="${activeMQConsumer.username}"
+			password="${secure::activeMQConsumer.password}">
+			<jms:caching-strategy>
 				<jms:no-caching />
 			</jms:caching-strategy>
-			<jms:factory-configuration brokerUrl="${activeMQConsumer.brokerUrl}" />
+			<jms:factory-configuration
+				brokerUrl="${activeMQConsumer.brokerUrl}" />
 		</jms:active-mq-connection>
 	</jms:config>
-	<!-- <anypoint-mq:config name="consumerCovid19CaseAnypointMQConfig" doc:name="Anypoint MQ Config" doc:id="77425b13-fdeb-46ee-bfe8-261d620a066d" >
-		<anypoint-mq:connection url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientAppId}" clientSecret="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientSecret}"/>
-	</anypoint-mq:config>
-		<anypoint-mq:config name="consumerUSCountiesAnypointMQConfig" doc:name="Anypoint MQ Config" doc:id="cb9894ab-136d-4929-9a6c-c055aea25572" >
-		<anypoint-mq:connection url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientAppId}" clientSecret="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientSecret}"/>
-	</anypoint-mq:config> -->
-	<http:request-config name="databaseSapiHTTPRequestConfig" doc:name="HTTP Request configuration" doc:id="5806f48d-f1d8-4397-b57c-df4870f1b0e6" basePath="${databaseSapi.basePath}">
-		<http:request-connection host="${databaseSapi.host}" port="${databaseSapi.port}" >
-			<reconnection >
+	<!-- <anypoint-mq:config name="consumerCovid19CaseAnypointMQConfig" doc:name="Anypoint 
+		MQ Config" doc:id="77425b13-fdeb-46ee-bfe8-261d620a066d" > <anypoint-mq:connection 
+		url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientAppId}" 
+		clientSecret="${secure::anypointMQConsumer.covid19CaseDistributionQueue.clientSecret}"/> 
+		</anypoint-mq:config> <anypoint-mq:config name="consumerUSCountiesAnypointMQConfig" 
+		doc:name="Anypoint MQ Config" doc:id="cb9894ab-136d-4929-9a6c-c055aea25572" 
+		> <anypoint-mq:connection url="${anypointMQConsumer.url}" clientId="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientAppId}" 
+		clientSecret="${secure::anypointMQConsumer.usCountiesCovid19CaseQueue.clientSecret}"/> 
+		</anypoint-mq:config> -->
+	<http:request-config
+		name="databaseSapiHTTPRequestConfig"
+		doc:name="HTTP Request configuration"
+		doc:id="5806f48d-f1d8-4397-b57c-df4870f1b0e6"
+		basePath="${databaseSapi.basePath}">
+		<http:request-connection
+			host="${databaseSapi.host}"
+			port="${databaseSapi.port}">
+			<reconnection>
 				<reconnect />
 			</reconnection>
 		</http:request-connection>
 	</http:request-config>
+	<http:request-config
+		name="caseDistributionHTTPRequestConfig"
+		doc:name="HTTP Request configuration"
+		doc:id="17a1c652-cd9e-4187-90e2-81b0e65ec445"
+		basePath="${caseDistributionSapi.basePath}">
+		<http:request-connection
+			host="${caseDistributionSapi.host}"
+			port="${caseDistributionSapi.port}" />
+	</http:request-config>
+	<http:request-config name="usCountiesHTTPRequestConfig" doc:name="HTTP Request configuration" doc:id="12296529-f617-4d6f-a2c7-36a6d4cd9845" basePath="${usCountiesSapi.basePath}">
+		<http:request-connection host="${usCountiesSapi.host}" port="${usCountiesSapi.port}" />
+	</http:request-config>
+	<flow name="post-covid19-case-data-papi-flow" doc:id="253a5099-0554-412f-9e74-aa3c0156b802">
+	<async doc:name="Async" doc:id="a0450c35-ba41-4b2c-b5ff-114ee29fe51b" >
+			<http:request method="GET" doc:name="GET:/covid19CaseDistribution" doc:id="fd61cd00-d8b6-46d5-96ae-9e9677c9d9db" config-ref="caseDistributionHTTPRequestConfig" path="${caseDistributionSapi.path}"/>
+		</async>
+		<!-- <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+  statusCode: "202",
+  message: "Accepted"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform> -->
+        </flow>
 	<flow name="get-covid19-case-data-papi-flow" doc:id="1f5e72d1-fb09-4b0c-8fb6-6dd01a6f4614" >
 		<!-- <anypoint-mq:subscriber doc:name="Subscriber - Covid19CaseDistributionQueue" doc:id="57409ebc-8fe3-470e-87b4-9a61ac8ed50f" config-ref="consumerCovid19CaseAnypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
 			<anypoint-mq:subscriber-type >
@@ -136,6 +186,22 @@ output application/json
     cumulative14DaysCasesPer100000: 105.98743808
   }
 ]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform> -->
+	</flow>
+	<flow name="post-us-counties-covid19-case-data-papi-flow" doc:id="f22a2bdb-208e-4cc2-9e34-3f3b539edeaa" >
+		<async doc:name="Async" doc:id="f02b6bfb-3d57-4749-adef-69fb1b1bf62d" >
+			<http:request method="GET" doc:name="GET:/usCountiesCovid19Case" doc:id="b3226d94-ffa7-4969-a3f9-a06e0130144e" config-ref="usCountiesHTTPRequestConfig" path="${usCountiesSapi.path}"/>
+		</async>
+		<!-- <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+  statusCode: "202",
+  message: "Accepted"
+}]]></ee:set-payload>
             </ee:message>
         </ee:transform> -->
 	</flow>
