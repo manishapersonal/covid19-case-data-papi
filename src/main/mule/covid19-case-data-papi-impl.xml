@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
-	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 	<jms:config
 		name="caseDistributionMQJMSConfig"
 		doc:name="JMS Config"
@@ -52,15 +53,16 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 				</anypoint-mq:polling>
 			</anypoint-mq:subscriber-type>
 		</anypoint-mq:subscriber> -->
-		<jms:listener doc:name="On New Message - Covid19CaseDistributionQueue" doc:id="ebcd71fb-f9e5-43ff-9295-55e0fe67672c" config-ref="caseDistributionMQJMSConfig" destination="${activeMQConsumer.caseDistributionQueue.name}">
-			<reconnect />
+		<jms:listener doc:name="On New Message - Covid19CaseDistributionQueue - Consumer" doc:id="ebcd71fb-f9e5-43ff-9295-55e0fe67672c" config-ref="caseDistributionMQJMSConfig" destination="${activeMQConsumer.caseDistributionQueue.name}" ackMode="IMMEDIATE" transactionalAction="ALWAYS_BEGIN">
+			<redelivery-policy />
+			<reconnect frequency="${activeMQConsumer.caseDistributionQueue.reconnection.frequency}" count="${activeMQConsumer.caseDistributionQueue.reconnection.maxAttempt}"/>
 			<jms:consumer-type >
 				<jms:queue-consumer />
 			</jms:consumer-type>
 			<jms:response persistentDelivery="true" />
 		</jms:listener>
 		<logger level="INFO" doc:name="ENTRY" doc:id="216cf297-fec9-4b26-ba63-97425f39608f" message="ENTRY: #[flow.name]"/>
-<!-- [STUDIO:"Set Payload"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Set Payload" doc:id="7d0d1f1a-1ed7-40ee-9e97-4ada8506cd95" mimeType="application/json" /> [STUDIO] -->
+<!-- [STUDIO:"Enable when manually put message into the Queue"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Enable when manually put message into the Queue" doc:id="7d0d1f1a-1ed7-40ee-9e97-4ada8506cd95" mimeType="application/json" /> [STUDIO] -->
 		<ee:transform doc:name="Format Data" doc:id="6ef53017-64ae-4061-9bac-4a22fe31f55b">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -82,8 +84,22 @@ payload map ((item,indexOfitem) -> {
 })]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="Covid19 Case Data Database SAPI" doc:id="3fe413b9-5a10-4f08-931c-3a8b6a89fcef" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.caseDistributionData.path}" sendCorrelationId="ALWAYS"/>
+		<until-successful maxRetries="${databaseSapi.caseDistributionData.untilSuccessfull.maxRetries}" doc:name="Until Successful" doc:id="2e9d89b1-9a4a-4808-a0c9-8498b9fb6f94" millisBetweenRetries="${databaseSapi.caseDistributionData.untilSuccessfull.timeInterval}">
+			<try doc:name="Try" doc:id="ef28f877-a7e4-4d4e-a41d-87c5e408e683">
+			<http:request method="POST" doc:name="Covid19 Case Data Database SAPI" doc:id="3fe413b9-5a10-4f08-931c-3a8b6a89fcef" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.caseDistributionData.path}" sendCorrelationId="ALWAYS" />
+			<error-handler >
+            	<on-error-continue doc:name="On Error Continue" type="HTTP:BAD_REQUEST, HTTP:FORBIDDEN, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_ACCEPTABLE, HTTP:NOT_FOUND, HTTP:UNAUTHORIZED" enableNotifications="true" logException="true">
+                	<logger level="WARN" doc:name="Skip Retry" message='Skip Retry connecting to Covid19 Case Data Database SAPI'/>
+            	</on-error-continue>
+        	</error-handler>
+		</try>
+		</until-successful>
 		<logger level="INFO" doc:name="EXIT" doc:id="2451b24d-7fc4-4b9f-9448-46e713b57ad1" message="EXIT: #[flow.name]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="005f5346-843f-4d1b-a33b-0ccf6d550028" type="JMS:RETRY_EXHAUSTED,MULE:RETRY_EXHAUSTED">
+				<logger level="INFO" doc:name="Logger" doc:id="f919f602-aff9-41a4-8622-911da8331a91" message="Unprocessed message sent to DLQ.."/>
+			</on-error-propagate>
+		</error-handler>
 		<!-- <http:request method="GET" doc:name="Request" doc:id="a8db081c-d02c-4692-a0a3-85168dee977d" /> -->
 		<!-- <ee:transform>
             <ee:message>
@@ -133,15 +149,16 @@ output application/json
 				</anypoint-mq:polling>
 			</anypoint-mq:subscriber-type>
 		</anypoint-mq:subscriber> -->
-		<jms:listener doc:name="On New Message - USCountiesCovid19CaseQueue" doc:id="410ee9b4-982c-4d87-9b0c-934cdd824f30" config-ref="usCountiesMQJMSConfig" destination="${activeMQConsumer.usCountiesQueue.name}">
-			<reconnect />
+		<jms:listener doc:name="On New Message - USCountiesCovid19CaseQueue - Consumer" doc:id="410ee9b4-982c-4d87-9b0c-934cdd824f30" config-ref="usCountiesMQJMSConfig" destination="${activeMQConsumer.usCountiesQueue.name}" transactionalAction="ALWAYS_BEGIN" ackMode="AUTO">
+			<redelivery-policy />
+			<reconnect frequency="${activeMQConsumer.usCountiesQueue.reconnection.frequency}" count="${activeMQConsumer.usCountiesQueue.reconnection.maxAttempt}"/>
 			<jms:consumer-type >
 				<jms:queue-consumer />
 			</jms:consumer-type>
 			<jms:response persistentDelivery="true" />
 		</jms:listener>
 		<logger level="INFO" doc:name="ENTRY" doc:id="6c567b92-d575-4e06-b695-ab58f8e41e5e" message="ENTRY: #[flow.name]"/>
-<!-- [STUDIO:"Set Payload"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Set Payload" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" /> [STUDIO] -->
+<!-- [STUDIO:"Enable when manually put message into the Queue"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Enable when manually put message into the Queue" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" /> [STUDIO] -->
 		<ee:transform doc:name="Format Data" doc:id="10c541e1-1c29-42f1-ae91-b24f703e7bae">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -157,7 +174,21 @@ payload map ((item,indexOfitem) -> {
 })]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="USCounties Covid19 Case Data Database SAPI" doc:id="4ed163ea-61bb-4d4f-b5cc-178dfe07a09c" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.usCountiesCovid19Data.path}" sendCorrelationId="ALWAYS"/>
+		<until-successful maxRetries="${databaseSapi.usCountiesCovid19Data.untilSuccessfull.maxRetries}" doc:name="Until Successful" doc:id="2bcb990e-6820-43da-8f68-490a018381fd" millisBetweenRetries="${databaseSapi.usCountiesCovid19Data.untilSuccessfull.timeInterval}">
+			<try doc:name="Try" doc:id="276416fd-907a-439c-af54-4af452c09f00" transactionalAction="BEGIN_OR_JOIN">
+			<http:request method="POST" doc:name="USCounties Covid19 Case Data Database SAPI" doc:id="4ed163ea-61bb-4d4f-b5cc-178dfe07a09c" config-ref="databaseSapiHTTPRequestConfig" path="${databaseSapi.usCountiesCovid19Data.path}" sendCorrelationId="ALWAYS" />
+			<error-handler >
+            	<on-error-continue doc:name="On Error Continue" type="HTTP:BAD_REQUEST, HTTP:FORBIDDEN, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_ACCEPTABLE, HTTP:NOT_FOUND, HTTP:UNAUTHORIZED" enableNotifications="true" logException="true">
+                	<logger level="WARN" doc:name="Skip Retry" message='Skip Retry connecting to Covid19 Case Data Database SAPI'/>
+            	</on-error-continue>
+        	</error-handler>
+		</try>
+		</until-successful>
 		<logger level="INFO" doc:name="EXIT" doc:id="4a87151c-0199-498c-bc2e-240ee17f7d43" message="EXIT: #[flow.name]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1aad306d-0e6a-42bf-9abf-c82b2f08eaaa" type="JMS:RETRY_EXHAUSTED,MULE:RETRY_EXHAUSTED">
+				<logger level="INFO" doc:name="Logger" doc:id="8783c9da-956f-45f3-a23b-b28c581a1650" message="Unprocessed message sent to DLQ.."/>
+			</on-error-propagate>
+		</error-handler>
 		</flow>
 </mule>

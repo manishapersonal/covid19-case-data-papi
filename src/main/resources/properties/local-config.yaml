@@ -22,16 +22,28 @@ databaseSapi:
   basePath: "/api"
   caseDistributionData:    
     path: "/covid19CaseData"
+    untilSuccessfull:
+      maxRetries: "3"
+      timeInterval: "30000"
   usCountiesCovid19Data:  
     path: "/usCountiesCovid19CaseData"
-
+    untilSuccessfull:
+      maxRetries: "3"
+      timeInterval: "30000"
+      
 activeMQConsumer:
    username: "admin"
    brokerUrl: "tcp://192.168.8.126:61616?jms.prefetchPolicy.queuePrefetch=10"   
    caseDistributionQueue:  
     name: "Covid19CaseDistributionQueue"
+    reconnection:
+      maxAttempt: "3"
+      frequency: "30000"
    usCountiesQueue:
     name: "USCountiesCovid19CaseQueue"
+    reconnection:
+      maxAttempt: "3"
+      frequency: "30000"
     
 //anypointMQConsumer:  
   //url: "https://mq-us-east-1.anypoint.mulesoft.com/api/v1"
