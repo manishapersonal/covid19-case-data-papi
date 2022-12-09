@@ -79,7 +79,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 	</http:request-config>
 	<flow name="post-covid19-case-data-papi-flow" doc:id="253a5099-0554-412f-9e74-aa3c0156b802">
 	<async doc:name="Async" doc:id="a0450c35-ba41-4b2c-b5ff-114ee29fe51b" >
-			<http:request method="GET" doc:name="GET:/covid19CaseDistribution" doc:id="fd61cd00-d8b6-46d5-96ae-9e9677c9d9db" config-ref="caseDistributionHTTPRequestConfig" path="${caseDistributionSapi.path}"/>
+			<http:request method="GET" doc:name="GET:/covid19CaseDistribution SAPI" doc:id="fd61cd00-d8b6-46d5-96ae-9e9677c9d9db" config-ref="caseDistributionHTTPRequestConfig" path="${caseDistributionSapi.path}"/>
 		</async>
 		<!-- <ee:transform>
             <ee:message>
@@ -93,6 +93,22 @@ output application/json
             </ee:message>
         </ee:transform> -->
         </flow>
+	<flow name="post-us-counties-covid19-case-data-papi-flow" doc:id="f22a2bdb-208e-4cc2-9e34-3f3b539edeaa">
+		<async doc:name="Async" doc:id="f02b6bfb-3d57-4749-adef-69fb1b1bf62d">
+			<http:request method="GET" doc:name="GET:/usCountiesCovid19Case SAPI" doc:id="b3226d94-ffa7-4969-a3f9-a06e0130144e" config-ref="usCountiesHTTPRequestConfig" path="${usCountiesSapi.path}" />
+		</async>
+		<!-- <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{
+  statusCode: "202",
+  message: "Accepted"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform> -->
+	</flow>
 	<flow name="get-covid19-case-data-papi-flow" doc:id="1f5e72d1-fb09-4b0c-8fb6-6dd01a6f4614" >
 		<!-- <anypoint-mq:subscriber doc:name="Subscriber - Covid19CaseDistributionQueue" doc:id="57409ebc-8fe3-470e-87b4-9a61ac8ed50f" config-ref="consumerCovid19CaseAnypointMQConfig" destination="${covid19CaseDistributionQueue.name}">
 			<anypoint-mq:subscriber-type >
@@ -113,6 +129,7 @@ output application/json
 		</jms:listener>
 		<logger level="INFO" doc:name="ENTRY" doc:id="216cf297-fec9-4b26-ba63-97425f39608f" message="ENTRY: #[flow.name]"/>
 <!-- [STUDIO:"Enable when manually put message into the Queue"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Enable when manually put message into the Queue" doc:id="7d0d1f1a-1ed7-40ee-9e97-4ada8506cd95" mimeType="application/json" /> [STUDIO] -->
+		
 		<ee:transform doc:name="Format Data" doc:id="6ef53017-64ae-4061-9bac-4a22fe31f55b">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -189,22 +206,6 @@ output application/json
             </ee:message>
         </ee:transform> -->
 	</flow>
-	<flow name="post-us-counties-covid19-case-data-papi-flow" doc:id="f22a2bdb-208e-4cc2-9e34-3f3b539edeaa" >
-		<async doc:name="Async" doc:id="f02b6bfb-3d57-4749-adef-69fb1b1bf62d" >
-			<http:request method="GET" doc:name="GET:/usCountiesCovid19Case" doc:id="b3226d94-ffa7-4969-a3f9-a06e0130144e" config-ref="usCountiesHTTPRequestConfig" path="${usCountiesSapi.path}"/>
-		</async>
-		<!-- <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
--&#45;&#45;
-{
-  statusCode: "202",
-  message: "Accepted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform> -->
-	</flow>
 	<flow name="get-us-counties-covid19-case-data-papi-flow" doc:id="04a91f53-ec3c-416a-bc8d-874d735d3cc2">
 		<!-- <anypoint-mq:subscriber doc:name="Subscriber - USCountiesCovid19CaseQueue" doc:id="a6ffb260-f150-45c8-8fee-46db172e1347" config-ref="consumerUSCountiesAnypointMQConfig" destination="${usCountiesCovid19CaseQueue.name}">
 			<anypoint-mq:subscriber-type >
@@ -225,6 +226,7 @@ output application/json
 		</jms:listener>
 		<logger level="INFO" doc:name="ENTRY" doc:id="6c567b92-d575-4e06-b695-ab58f8e41e5e" message="ENTRY: #[flow.name]"/>
 <!-- [STUDIO:"Enable when manually put message into the Queue"]		<set-payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;read(payload,"application/json")]' doc:name="Enable when manually put message into the Queue" doc:id="736164d4-b4ca-4798-b802-79cf5bdada68" mimeType="application/json" /> [STUDIO] -->
+		<!-- <json:validate-schema doc:name="US Counties Schema Validation" doc:id="443f1e1e-603b-43d7-ba91-ae13284c6e0c" schema="schemas/us-counties-json-schema.json"/> -->
 		<ee:transform doc:name="Format Data" doc:id="10c541e1-1c29-42f1-ae91-b24f703e7bae">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
